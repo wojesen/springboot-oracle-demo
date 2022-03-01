@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.springbootoracle.dao.UserDao" > <!-- 注意UserDao路径是否正确 -->
+  <resultMap id="BaseResultMap" type="com.example.springbootoracle.entity.User" >
+    <id column="XID" property="xId" jdbcType="DECIMAL" />  <!--主键字段，oracle中的 number类型 对应 DECIMAL-->
+    <result column="XName" property="xName" jdbcType="VARCHAR" />  <!-- oracle中的 varchar2类型 对应 VARCHAR -->
+    <result column="XAge" property="xAge" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" > <!-- 数据库中的字段-->
+    XID,XNAME,XAGE
+  </sql>
+
+  <!--    id="xxx" 这个xxx要对应UserDao里面的方法名，不然映射会出问题 -->
+  <insert id="insert" parameterType="com.example.springbootoracle.entity.User" >
+    insert into USER_TEST (XID, XName, XAge)
+    values (#{xId,jdbcType=DECIMAL}, #{xName,jdbcType=VARCHAR}, #{xAge,jdbcType=DECIMAL})  <!-- 通过变量给数据库传值 -->
+  </insert>
+
+  <delete id="delete" parameterType="int" >
+    delete from USER_TEST
+    where XID = #{xId,jdbcType=DECIMAL}
+  </delete>
+
+  <update id="update" parameterType="com.example.springbootoracle.entity.User" >
+    update User_TEST
+    <set >
+      <if test="xId != null" >  <!-- 这里的if是为了防止把原有数据修改为空，也就是误删。也可以不加判断 -->
+        XID = #{xId,jdbcType=DECIMAL},
+      </if>
+      <if test="xName != null" >
+        XName = #{xName,jdbcType=VARCHAR},
+      </if>
+      <if test="xAge != null  and xAge != 0" >
+        XAge = #{xAge,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where XID = #{xId,jdbcType=DECIMAL}
+  </update>
+
+  <select id="select" resultMap="BaseResultMap" parameterType="int" >   --  id=" ",这里面对应User里的方法名
+    SELECT * FROM USER_TEST
+    WHERE XID= #{xId} <!-- 给数据库中的 XID传参数-->
+  </select>
+
+
+
+</mapper>
